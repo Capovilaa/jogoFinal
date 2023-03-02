@@ -1,0 +1,143 @@
+import random
+import sys
+from PyQt5.QtCore import QTimer
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel
+from PyQt5 import QtGui
+from random import randint
+
+class Jogo(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.escolhaPc = 0
+        self.escolhaJogador = 0
+        self.vencedorPC = 0
+        self.vencedorJogador = 0
+
+        self.topo = 100
+        self.esquerda = 100
+        self.largura = 950
+        self.altura = 600
+        self.titulo = 'Pedra papel tesoura'
+
+        #Botão inicar
+        self.btPlay = QPushButton('JOGAR', self)
+        self.btPlay.move(100, 40)
+        self.btPlay.resize(90, 60)
+        self.btPlay.setStyleSheet('QPushButton {background-color:"red"; font:bold; font-size: 20px; color:"white"}')
+        self.btPlay.clicked.connect(self.sortearJogadaPC)
+
+        #label computador
+        self.lbPc = QLabel(self)
+        self.lbPc.setText('Jogada do computador: ')
+        self.lbPc.move(100,200)
+        self.lbPc.setStyleSheet('QLabel {font:bold; font-size:20px; color:"black"}')
+        self.lbPc.resize(250,25)
+
+        #label resultado final
+        self.lbRes = QLabel(self)
+        self.lbRes.setText('')
+        self.lbRes.move(100,300)
+        self.lbRes.setStyleSheet('QLabel {font:bold; font-size:20px; color:"black"}')
+        self.lbRes.resize(250,25)
+
+        #label que recebe jogada
+        self.lbJogadaPc = QLabel(self)
+        self.lbJogadaPc.setText('')
+        self.lbJogadaPc.move(350, 200)
+        self.lbJogadaPc.setStyleSheet('QLabel {font:bold; font-size:20px; color:"black"}')
+        self.lbJogadaPc.resize(250, 25)
+
+        # label vitórias
+        self.lbVitoria = QLabel(self)
+        self.lbVitoria.setText('VITÓRIAS:\n'
+                               'Jogador: \n'
+                               'Computador: ')
+        self.lbVitoria.move(750, 0)
+        self.lbVitoria.setStyleSheet('QLabel {font:bold; font-size:20px; color:"black"}')
+        self.lbVitoria.resize(400, 200)
+
+        #label título
+        self.lbPc = QLabel(self)
+        self.lbPc.setText('Pedra Papel Tesoura')
+        self.lbPc.move(350,40)
+        self.lbPc.setStyleSheet('QLabel {font:bold; font-size:30px; color:"black"}')
+        self.lbPc.resize(330,40)
+
+        #Pedra
+        self.btPedra = QPushButton('Pedra', self)
+        self.btPedra.move(100, 500)
+        self.btPedra.resize(150, 80)
+        self.btPedra.setStyleSheet('QPushButton {background-color:"blue"; font:bold; font-size: 20px; color:"white"}')
+        self.btPedra.clicked.connect(self.clickPedra)
+
+        #Papel
+        self.btPapel = QPushButton('Papel', self)
+        self.btPapel.move(400, 500)
+        self.btPapel.resize(150, 80)
+        self.btPapel.setStyleSheet('QPushButton {background-color:#0FB328; font:bold; font-size: 20px; color:"white"}')
+        self.btPapel.clicked.connect(self.clickPapel)
+
+        #Tesoura
+        self.btTesoura = QPushButton('Tesoura', self)
+        self.btTesoura.move(700, 500)
+        self.btTesoura.resize(150, 80)
+        self.btTesoura.setStyleSheet('QPushButton {background-color:"orange"; font:bold; font-size: 20px; color:"white"}')
+        self.btTesoura.clicked.connect(self.clickTesoura)
+
+        #Timer
+        self.timer = QTimer()
+        self.carregarJanela()
+
+    def carregarJanela(self):
+        self.setGeometry(self.esquerda, self.topo, self.largura, self.altura)
+        self.setWindowTitle(self.titulo)
+        self.show()
+
+    #Sorteia jogada do pc
+    def sortearJogadaPC(self):
+        if self.timer.isActive() == False:
+            self.timer.start(1000)
+
+        sorteado = random.randint(1,3)
+        if sorteado ==1:
+            self.lbJogadaPc.setText('Pedra')
+            self.escolhaPc = 1
+        elif sorteado ==2:
+            self.lbJogadaPc.setText('Papel')
+            self.escolhaPc = 2
+        else:
+            self.lbJogadaPc.setText('Tesoura')
+            self.escolhaPc = 3
+
+    #Escolha do usuário
+    def clickPedra(self):
+        self.escolhaJogador = 1
+        self.verificaJogada()
+
+    def clickPapel(self):
+        self.escolhaJogador = 2
+        self.verificaJogada()
+
+    def clickTesoura(self):
+        self.escolhaJogador = 3
+        self.verificaJogada()
+
+    def verificaJogada(self):
+        if self.escolhaJogador == self.escolhaPc:
+            self.lbRes.setText('Empate')
+        elif self.escolhaJogador == 1 and self.escolhaPc == 3 or self.escolhaJogador == 2 and self.escolhaPc == 1 or self.escolhaJogador == 3 and self.escolhaPc ==2:
+            self.lbRes.setText('Você venceu')
+            self.vencedorJogador+=1
+        elif  self.escolhaPc == 1 and self.escolhaJogador == 3 or self.escolhaPc == 2 and self.escolhaJogador == 1 or self.escolhaPc == 3 and self.escolhaJogador ==2:
+            self.lbRes.setText('Computador venceu')
+            self.vencedorPC+=1
+        else:
+            self.lbRes.setText('Erro')
+        self.lbVitoria.setText(f'VITÓRIAS:\n'
+                               f'Jogador: {self.vencedorJogador}\n'
+                               f'Computador:{self.vencedorPC} ')
+        self.sortearJogadaPC()
+
+aplicacao = QApplication(sys.argv)
+j = Jogo()
+sys.exit(aplicacao.exec_())
